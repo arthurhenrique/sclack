@@ -196,11 +196,6 @@ class ChatBox(urwid.Frame):
         super(ChatBox, self).__init__(self.body, header=header, footer=self.message_box)
 
     def keypress(self, size, key):
-        keymap = Store.instance.config['keymap']
-        if key == keymap['go_to_sidebar']:
-            self.header.restore_topic()
-            urwid.emit_signal(self, 'go_to_sidebar')
-            return key
         return super(ChatBox, self).keypress(size, key)
 
     @property
@@ -420,7 +415,10 @@ class Message(urwid.AttrMap):
             urwid.emit_signal(self, 'set_insert_mode')
             return True
         elif key == keymap['yank_message']:
-            pyperclip.copy(self.original_text)
+            try:
+                pyperclip.copy(self.original_text)
+            except pyperclip.PyperclipException:
+                pass
             return True
         return super(Message, self).keypress(size, key)
 
